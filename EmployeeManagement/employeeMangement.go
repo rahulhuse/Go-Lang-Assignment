@@ -88,11 +88,11 @@ func main() {
 			fmt.Println("Enter emp id")
 			scanner.Scan()
 			empid, _ := strconv.ParseInt(scanner.Text(), 10, 64)
-			for i := 0; i < len(arremp); i++ {
+			for i := len(arremp) - 1; i >= 0; i-- {
 				if arremp[i].empid == empid {
 
-					//arremp = append(arremp[:i], arremp[i+1:]...)
-					arremp = arremp[empid:]
+					arremp = append(arremp[:i], arremp[i+1:]...)
+					// arremp = arremp[empid:]
 				}
 			}
 		default:
