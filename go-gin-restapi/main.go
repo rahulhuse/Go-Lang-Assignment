@@ -73,6 +73,7 @@ func checkOutBook(context *gin.Context) {
 
 	if err != nil {
 		context.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found"})
+		return
 	}
 
 	if book.Quantity <= 0 {
