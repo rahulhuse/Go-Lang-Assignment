@@ -21,7 +21,6 @@ type studentRepo struct {
 
 func StudentNew() StudentRepositoryInterface {
 	db := database.InitDb()
-	db.AutoMigrate(&models.Student{})
 	return &studentRepo{Db: db}
 }
 

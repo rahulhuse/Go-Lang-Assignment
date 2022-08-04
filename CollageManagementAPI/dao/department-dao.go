@@ -21,7 +21,6 @@ type departmentRepo struct {
 
 func DepartmentNew() DepartmentService {
 	db := database.InitDb()
-	db.AutoMigrate(&models.Department{})
 	return &departmentRepo{Db: db}
 }
 

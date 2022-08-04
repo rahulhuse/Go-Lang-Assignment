@@ -22,7 +22,6 @@ type CollageRepo struct {
 
 func CollageNew() CollageService {
 	db := database.InitDb()
-	//db.AutoMigrate(&models.Collage{})
 	return &CollageRepo{Db: db}
 }
 
@@ -73,8 +72,9 @@ func (collageRepo *CollageRepo) UpdateCollage(collage *models.Collage, collageid
 	return nil
 }
 
-func (collageRepo *CollageRepo) DeleteCollage(collage *models.Collage, collage_id string) (err error) {
-	collageRepo.Db.Where("collage_id = ?", collage_id).Delete(collage)
+func (collageRepo *CollageRepo) DeleteCollage(collage *models.Collage, collageid string) (err error) {
+
+	collageRepo.Db.Where("collage_id = ?", collageid).Delete(collage)
 
 	return nil
 

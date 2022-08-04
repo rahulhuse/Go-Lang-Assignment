@@ -2,19 +2,13 @@ package controllers
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"gorm-test/controllers"
-	"gorm-test/database"
-	"gorm-test/models"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 )
 
 func TestGetAllCollagesCon(t *testing.T) {
@@ -42,60 +36,53 @@ func TestGetAllCollagesCon(t *testing.T) {
 
 func TestCreateCollageCon(t *testing.T) {
 
-	a := assert.New(t)
-	database.ConnectDB()
+	var jsonStr = []byte(`{"id":1,"collage_id":1,"collage_name":"IIT","collage_email":"iit@org.com","collage_mobile":"88885858","collage_address":"Pune"}`)
 
-	collage := models.Collage{
-		CollageID:      1,
-		CollageName:    "IIT",
-		CollageEmail:   "iit@org.com",
-		CollageMobile:  "88885858",
-		CollageAddress: "Pune",
-		Departments:    nil,
-		Staffs:         nil,
-		Students:       nil,
-	}
-
-	reqBody, err := json.Marshal(collage)
+	req, err := http.NewRequest("POST", "/collage-api/collage", bytes.NewBuffer(jsonStr))
 	if err != nil {
-		a.Error(err)
+		t.Fatal(err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	r := gin.Default()
+	r.POST("/collage-api/collage", controllers.CreateCollageCon)
+	r.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+	expected := `{"id":1,"collage_id":1,"collage_name":"IIT","collage_email":"iit@org.com","collage_mobile":"88885858","collage_address":"Pune"}`
+	if rr.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rr.Body.String(), expected)
 	}
 
-	req, w, err := setCreateBookRouter(bytes.NewBuffer(reqBody))
-	if err != nil {
-		a.Error(err)
-	}
-
-	a.Equal(http.MethodPost, req.Method, "HTTP request method error")
-	a.Equal(http.StatusOK, w.Code, "HTTP request status code error")
-
-	body, err := ioutil.ReadAll(w.Body)
-	if err != nil {
-		a.Error(err)
-	}
-
-	actual := models.Collage{}
-	if err := json.Unmarshal(body, &actual); err != nil {
-		a.Error(err)
-	}
-
-	actual.Model = gorm.Model{}
-	expected := collage
-	a.Equal(expected, actual)
 }
 
-func setCreateBookRouter(body *bytes.Buffer) (*http.Request, *httptest.ResponseRecorder, error) {
-	r := gin.New()
-	r.POST("/collage-api/collage", controllers.CreateCollageCon)
-	req, err := http.NewRequest(http.MethodPost, "/collage-api/collage", body)
+func TestGetCollageByIDCon(t *testing.T) {
+
+	req, err := http.NewRequest("GET", "/entry", nil)
 	if err != nil {
-		return req, httptest.NewRecorder(), err
+		t.Fatal(err)
+	}
+	q := req.URL.Query()
+	q.Add("id", "1")
+	req.URL.RawQuery = q.Encode()
+	rr := httptest.NewRecorder()
+	r := gin.Default()
+	r.GET("/collage-api/collage", controllers.GetStudentByID)
+	r.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
 	}
 
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	return req, w, nil
+	// Check the response body is what we expect.
+	expected := `{"id":1,"collage_id":1,"collage_name":"IIT","collage_email":"iit@org.com","collage_mobile":"88885858","collage_address":"Pune"}`
+	if rr.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rr.Body.String(), expected)
+	}
 }
 
 func TestUpdateCollageCon(t *testing.T) {

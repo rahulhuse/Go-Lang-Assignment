@@ -22,7 +22,6 @@ type UserRepo struct {
 
 func New() DaoInterface {
 	db := database.InitDb()
-	db.AutoMigrate(&models.User{})
 	return &UserRepo{Db: db}
 }
 

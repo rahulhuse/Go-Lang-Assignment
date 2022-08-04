@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"gorm-test/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -25,11 +26,21 @@ func ConnectDB() *gorm.DB {
 	dsn := DB_USERNAME + ":" + DB_PASSWORD + "@tcp" + "(" + DB_HOST + ":" + DB_PORT + ")/" + DB_NAME + "?" + "parseTime=true&loc=Local"
 	fmt.Println("dsn : ", dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db.AutoMigrate(&models.Collage{}, &models.Department{}, &models.Staff{}, &models.Student{}, &models.User{})
 
 	if err != nil {
 		fmt.Printf("Error connecting to database : error=%v", err)
 		return nil
 	}
+   
 
 	return db
+}
+
+func CloseDbConnextion(Db *gorm.DB) {
+	dbSQL, err := Db.DB()
+	if err != nil {
+		panic("Failed to close connection from database")
+	}
+	dbSQL.Close()
 }

@@ -21,7 +21,6 @@ type stafftRepo struct {
 
 func StaffNew() StaffService {
 	db := database.InitDb()
-	db.AutoMigrate(&models.Staff{})
 	return &stafftRepo{Db: db}
 }
 

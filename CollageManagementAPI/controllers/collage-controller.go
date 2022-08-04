@@ -38,14 +38,21 @@ func MyTest(c *gin.Context) {
 
 func CreateCollageCon(c *gin.Context) {
 	var collage []models.Collage
-	c.BindJSON(&collage)
+	errs := c.BindJSON(&collage)
+
+	if errs != nil {
+		return
+	}
+
 	err := dao.CollageNew().CreateCollage(&collage)
 
 	if err != nil {
 		fmt.Println(err.Error())
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Collage": "Is not created"})
+		c.JSON(http.StatusBadRequest, gin.H{"Collage": "Is not created"})
+		return
 	} else {
 		c.JSON(http.StatusCreated, gin.H{"message": "Collage has been created"})
+		return
 	}
 }
 
@@ -84,17 +91,17 @@ func UpdateCollageCon(c *gin.Context) {
 
 func DeleteCollageCon(c *gin.Context) {
 	var collage models.Collage
-	collage_id := c.Params.ByName("collage_id")
+	collageid := c.Params.ByName("collageid")
 
-	err := dao.CollageNew().GetCollageByID(&collage, collage_id)
+	err := dao.CollageNew().GetCollageByID(&collage, collageid)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"CollageID: " + collage_id: "Not found"})
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"CollageID: " + collageid: "Not found"})
 	} else {
 
-		dao.CollageNew().DeleteCollage(&collage, collage_id)
+		dao.CollageNew().DeleteCollage(&collage, collageid)
 
-		c.JSON(http.StatusOK, gin.H{"collage_id " + collage_id: "is deleted"})
+		c.JSON(http.StatusOK, gin.H{"collage_id " + collageid: "is deleted"})
 
 	}
 }
