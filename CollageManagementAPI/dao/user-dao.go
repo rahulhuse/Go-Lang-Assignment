@@ -28,11 +28,11 @@ func New() DaoInterface {
 //get users
 func (repository *UserRepo) GetUsers(User *[]models.User) (err error) {
 
-	fmt.Println("Inside get users")
-	err = repository.Db.Find(User).Error
-	if err != nil {
+	fmt.Println("Inside dao layer")
+	if err := repository.Db.Find(User).Error; err != nil {
 		return err
 	}
+	fmt.Println("Inside dao layer end")
 	return nil
 }
 

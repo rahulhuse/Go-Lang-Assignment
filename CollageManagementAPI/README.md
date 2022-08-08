@@ -1,6 +1,6 @@
-# Golang : Use gorm with mysql in gin
+# Golang : Collage Mangaement API
 
-This repository guides to how ORM can be implemented in Golang. After cloning the code, follow below steps to let the project run on your system.
+This repository guides to Collage Management System in Golang. After cloning the code, follow below steps to let the project run on your system.
 
 1. Run `go build main.go`
 

@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"gorm-test/dao"
 	"gorm-test/models"
+	"gorm-test/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,7 @@ func GetAllDepartments(c *gin.Context) {
 
 	var dept []models.Department
 
-	err := dao.DepartmentNew().GetAllDepartments(&dept)
+	err := service.GetAllDepartments(&dept)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"Departments: ": "Not found"})
@@ -26,7 +26,7 @@ func GetAllDepartments(c *gin.Context) {
 func CreateDepartment(c *gin.Context) {
 	var dept models.Department
 	c.BindJSON(&dept)
-	err := dao.DepartmentNew().CreateDepartment(&dept)
+	err := service.CreateDepartment(&dept)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -40,7 +40,7 @@ func GetDepartmentByID(c *gin.Context) {
 	department_id := c.Params.ByName("department_id")
 	var dept models.Department
 
-	err := dao.DepartmentNew().GetDepartmentByID(&dept, department_id)
+	err := service.GetDepartmentByID(&dept, department_id)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"DepartmentID: " + department_id: "Not found"})
@@ -53,13 +53,13 @@ func UpadateDepartment(c *gin.Context) {
 	var dept models.Department
 	department_id := c.Params.ByName("department_id")
 
-	err := dao.DepartmentNew().GetDepartmentByID(&dept, department_id)
+	err := service.GetDepartmentByID(&dept, department_id)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"DepartmentID: " + department_id: "Not found"})
 	} else {
 		c.BindJSON(&dept)
-		dao.DepartmentNew().UpadateDepartment(&dept, department_id)
+		service.UpadateDepartment(&dept, department_id)
 		c.JSON(http.StatusOK, dept)
 	}
 
@@ -69,12 +69,12 @@ func DeleteDepartmentByID(c *gin.Context) {
 	var dept models.Department
 	department_id := c.Params.ByName("department_id")
 
-	err := dao.DepartmentNew().GetDepartmentByID(&dept, department_id)
+	err := service.GetDepartmentByID(&dept, department_id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"DepartmentID: " + department_id: "Not found"})
 
 	} else {
-		dao.DepartmentNew().DeleteDepartmentByID(&dept, department_id)
+		service.DeleteDepartmentByID(&dept, department_id)
 		c.JSON(http.StatusOK, gin.H{"department_id " + department_id: "is deleted"})
 	}
 

@@ -6,12 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// var (
-// 	UserInter           dao.UserRepo                    = dao.UserRepo{}
-// 	UserService         service.UserService             = service.New(UserInter)
-// 	ControllerInterFace controllers.ControllerInterFace = controllers.ControllerNew(UserService)
-// )
-
 func SetupRouter() *gin.Engine {
 
 	r := gin.Default()

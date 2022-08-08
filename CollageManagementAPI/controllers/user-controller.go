@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gorm-test/dao"
 	"gorm-test/models"
+	"gorm-test/service"
 	"net/http"
 	"strconv"
 
@@ -11,28 +12,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// type ControllerInterFace interface {
-// 	GetUsers(c *gin.Context)
-// }
-
-// type myController struct {
-// 	service service.UserService
-// }
-
-// func ControllerNew(service service.UserService) ControllerInterFace {
-// 	return &myController{
-// 		service: service,
-// 	}
-// }
-
-//get users
 func GetUsers(c *gin.Context) {
-	// var user []models.User
 
 	var user []models.User
 
 	//var err error
-	err := dao.New().GetUsers(&user)
+	err := service.GetUsers(&user)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -45,7 +30,7 @@ func GetUsers(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	var user models.User
 	c.BindJSON(&user)
-	err := dao.New().CreateUser(&user)
+	err := service.CreateUser(&user)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
