@@ -36,7 +36,7 @@ func TestGetAllCollagesCon(t *testing.T) {
 
 func TestCreateCollageCon(t *testing.T) {
 
-	var jsonStr = []byte(`{"id":1,"collage_id":1,"collage_name":"IIT","collage_email":"iit@org.com","collage_mobile":"88885858","collage_address":"Pune"}`)
+	var jsonStr = []byte(`[{"ID":8,"CreatedAt":"0001-01-01T00:00:00Z","UpdatedAt":"2022-08-05T18:42:35.764+05:30","DeletedAt":null,"collageid":8,"collagename":"abc","collageemail":"abc","collagemobile":"5567","collageaddress":"Mumbai","Departments":null,"Staffs":null,"Students":null}]`)
 
 	req, err := http.NewRequest("POST", "/collage-api/collage", bytes.NewBuffer(jsonStr))
 	if err != nil {
@@ -47,11 +47,11 @@ func TestCreateCollageCon(t *testing.T) {
 	r := gin.Default()
 	r.POST("/collage-api/collage", controllers.CreateCollageCon)
 	r.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
+	if status := rr.Code; status != http.StatusCreated {
 		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
+			status, http.StatusCreated)
 	}
-	expected := `{"id":1,"collage_id":1,"collage_name":"IIT","collage_email":"iit@org.com","collage_mobile":"88885858","collage_address":"Pune"}`
+	expected := `[{"ID":8,"CreatedAt":"0001-01-01T00:00:00Z","UpdatedAt":"2022-08-05T18:42:35.764+05:30","DeletedAt":null,"collageid":8,"collagename":"abc","collageemail":"abc","collagemobile":"5567","collageaddress":"Mumbai","Departments":null,"Staffs":null,"Students":null}]`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
@@ -61,16 +61,13 @@ func TestCreateCollageCon(t *testing.T) {
 
 func TestGetCollageByIDCon(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/entry", nil)
+	req, err := http.NewRequest("GET", "/collage-api/collage/1", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	q := req.URL.Query()
-	q.Add("id", "1")
-	req.URL.RawQuery = q.Encode()
 	rr := httptest.NewRecorder()
 	r := gin.Default()
-	r.GET("/collage-api/collage", controllers.GetStudentByID)
+	r.GET("/collage-api/collage/:collageid", controllers.GetCollageByIDCon)
 	r.ServeHTTP(rr, req)
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -78,7 +75,7 @@ func TestGetCollageByIDCon(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"id":1,"collage_id":1,"collage_name":"IIT","collage_email":"iit@org.com","collage_mobile":"88885858","collage_address":"Pune"}`
+	expected := `{"ID":1,"CreatedAt":"0001-01-01T00:00:00Z","UpdatedAt":"2022-08-05T18:42:35.764+05:30","DeletedAt":null,"collageid":1,"collagename":"abc","collageemail":"abc","collagemobile":"5567","collageaddress":"oune","Departments":[{"ID":1,"CreatedAt":"0001-01-01T00:00:00Z","UpdatedAt":"0001-01-01T00:00:00Z","DeletedAt":null,"departmentid":1,"departmentname":"IT","collageid":1}],"Staffs":[{"ID":1,"CreatedAt":"0001-01-01T00:00:00Z","UpdatedAt":"0001-01-01T00:00:00Z","DeletedAt":null,"staffid":1,"staffname":"abc","staffmobilenumber":"495959","collageid":1}],"Students":[{"ID":1,"CreatedAt":"0001-01-01T00:00:00Z","UpdatedAt":"0001-01-01T00:00:00Z","DeletedAt":null,"studentid":1,"studentname":"qqq","studentmobilenumber":"222","collageid":1}]}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
@@ -86,35 +83,41 @@ func TestGetCollageByIDCon(t *testing.T) {
 }
 
 func TestUpdateCollageCon(t *testing.T) {
-	type args struct {
-		c *gin.Context
+	var jsonStr = []byte(`{"ID":8,"CreatedAt":"2022-08-08T13:25:43.214+05:30","UpdatedAt":"2022-08-08T13:39:33.1783916+05:30","DeletedAt":null,"collageid":8,"collagename":"abc","collageemail":"abc","collagemobile":"5567","collageaddress":"Pune","Departments":null,"Staffs":null,"Students":null}`)
+
+	req, err := http.NewRequest("PUT", "/collage-api/collage/8", bytes.NewBuffer(jsonStr))
+	if err != nil {
+		t.Fatal(err)
 	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	r := gin.Default()
+	r.PUT("/collage-api/collage/:collageid", controllers.UpdateCollageCon)
+	r.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			controllers.UpdateCollageCon(tt.args.c)
-		})
-	}
+	// expected := `{"ID":8,"CreatedAt":"2022-08-08T13:25:43.214+05:30","UpdatedAt":"2022-08-08T13:39:33.1783916+05:30","DeletedAt":null,"collageid":8,"collagename":"abc","collageemail":"abc","collagemobile":"5567","collageaddress":"Pune","Departments":null,"Staffs":null,"Students":null}`
+	// if rr.Body.String() != expected {
+	// 	t.Errorf("handler returned unexpected body: got %v want %v",
+	// 		rr.Body.String(), expected)
+	// }
 }
 
 func TestDeleteCollageCon(t *testing.T) {
-	type args struct {
-		c *gin.Context
+
+	req, err := http.NewRequest(http.MethodDelete, "/collage-api/collage/7", nil)
+	if err != nil {
+		t.Fatal(err)
 	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			controllers.DeleteCollageCon(tt.args.c)
-		})
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	r := gin.Default()
+	r.DELETE("/collage-api/collage/:collageid", controllers.DeleteCollageCon)
+	r.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
 	}
 }

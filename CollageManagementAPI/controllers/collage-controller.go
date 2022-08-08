@@ -51,7 +51,7 @@ func CreateCollageCon(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"Collage": "Is not created"})
 		return
 	} else {
-		c.JSON(http.StatusCreated, gin.H{"message": "Collage has been created"})
+		c.JSON(http.StatusCreated, collage)
 		return
 	}
 }
