@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"gorm-test/dao"
 	"gorm-test/models"
 )
@@ -19,6 +20,7 @@ func GetAllStaff(staff *[]models.Staff) (err error) {
 
 func CreateStaff(staff *models.Staff) (err error) {
 
+	fmt.Println("create staff service")
 	err = dao.StaffNew().CreateStaff(staff)
 
 	if err != nil {

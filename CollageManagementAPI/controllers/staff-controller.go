@@ -24,6 +24,8 @@ func GetAllStaff(c *gin.Context) {
 }
 
 func CreateStaff(c *gin.Context) {
+
+	fmt.Println("create staff controller")
 	var staff models.Staff
 	c.BindJSON(&staff)
 	err := service.CreateStaff(&staff)
@@ -66,6 +68,9 @@ func UpadateStaff(c *gin.Context) {
 }
 
 func DeleteStaffByID(c *gin.Context) {
+
+	fmt.Println("In controller deletebyStaffId")
+
 	var staff models.Staff
 	staff_id := c.Params.ByName("staff_id")
 

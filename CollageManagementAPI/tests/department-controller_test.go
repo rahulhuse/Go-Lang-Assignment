@@ -37,8 +37,8 @@ func TestCreateDepartment(t *testing.T) {
 	r := gin.Default()
 	r.POST("/collage-api/department", controllers.CreateDepartment)
 	department := models.Department{
-		DepartmentID:   5,
-		DepartmentName: "IT",
+		DepartmentID:   1,
+		DepartmentName: "OO",
 		CollageID:      1,
 	}
 	jsonValue, _ := json.Marshal(department)
@@ -56,13 +56,13 @@ func TestCreateDepartment(t *testing.T) {
 
 func TestGetDepartmentByID(t *testing.T) {
 
-	r := gin.Default()
-	r.GET("/collage-api/department/1", controllers.GetAllDepartments)
 	req, err := http.NewRequest("GET", "/collage-api/department/1", nil)
 
 	if err != nil {
 		t.Fatalf("Couldn't create request: %v\n", err)
 	}
+	r := gin.Default()
+	r.GET("/collage-api/department/:department_id", controllers.GetDepartmentByID)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -72,27 +72,29 @@ func TestGetDepartmentByID(t *testing.T) {
 
 func TestUpadateDepartment(t *testing.T) {
 
-	r := gin.Default()
+	var jsonStr = []byte(
+		`{"ID": 2,
+		"CreatedAt": "2022-08-10T19:09:05.07+05:30",
+		"UpdatedAt": "2022-08-10T19:09:05.07+05:30",
+		"DeletedAt": null,
+		"departmentid": 1,
+		"departmentname": "CIVIL",
+		"collageid": 1
+	  }`)
 
-	r.PUT("/collage-api/department/:id", func(c *gin.Context) {
-		id := c.Param("")
-		c.String(http.StatusOK, "Hello %s", id)
-	}, controllers.UpadateDepartment)
-
-	department := models.Department{
-		DepartmentID:   5,
-		DepartmentName: "CIVIL",
-		CollageID:      1,
-	}
-	jsonValue, _ := json.Marshal(department)
-	reqFound, err := http.NewRequest("PUT", "/collage-api/department/5", bytes.NewBuffer(jsonValue))
-
+	req, err := http.NewRequest("PUT", "/collage-api/department/1", bytes.NewBuffer(jsonStr))
 	if err != nil {
-		t.Fatalf("Couldn't create request: %v\n", err)
+		t.Fatal(err)
 	}
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, reqFound)
-	assert.Equal(t, http.StatusOK, w.Code)
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	r := gin.Default()
+	r.PUT("/collage-api/department/:department_id", controllers.UpadateDepartment)
+	r.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
 
 	// reqNotFound, _ := http.NewRequest("PUT", "/collage-api/department/13", bytes.NewBuffer(jsonValue))
 	// w = httptest.NewRecorder()
@@ -103,15 +105,18 @@ func TestUpadateDepartment(t *testing.T) {
 
 func TestDeleteDepartmentByID(t *testing.T) {
 
-	req, err := http.NewRequest(http.MethodDelete, "/collage-api/department/3", nil)
+	req, err := http.NewRequest(http.MethodDelete, "/collage-api/department/5", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	rr := httptest.NewRecorder()
 	r := gin.Default()
-	r.DELETE("/collage-api/department/:collageid", controllers.DeleteCollageCon)
-
-	assert.Equal(t, http.StatusOK, rr.Code)
+	r.DELETE("/collage-api/department/:department_id", controllers.DeleteDepartmentByID)
+	r.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
 
 }
